@@ -1,15 +1,13 @@
 from gpiozero import OutputDevice
 from paho.mqtt import subscribe
-import asyncio
 
 class RemoteRelay:
     def __init__(self, pin, mqtt_server, topic):
-        self.relay = OutputDevice(pin)
+        self.relay = OutputDevice(pin, initial_value=True)
         subscribe.callback(callback=self.callback, topics=topic, hostname=mqtt_server)
 
     def callback(self, client, userdata, message):
-        self._switch(int(message.payload))
-        
+        self._switch(int(message.payload))    
 
     def _switch(self, status):
         print(f"switch called with {status} - current status: {self.relay.value}")
@@ -18,4 +16,4 @@ class RemoteRelay:
             self.relay.toggle()
             
 if __name__ == '__main__':
-    asyncio.run(RemoteRelay(4, "192.168.188.37", "/setting/picenter/relay/"))
+    RemoteRelay(4, "192.168.188.37", "/setting/picenter/relay/")
